@@ -40,6 +40,9 @@ const TranscriptAnalysis: React.FC = () => {
     const [data, setData] = useState<TranscriptData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: string }>({});
+    const [showResults, setShowResults] = useState(false);
+    const [score, setScore] = useState<number | null>(null);
 
     useEffect(() => {
         const fetchAnalysis = async () => {
@@ -63,6 +66,34 @@ const TranscriptAnalysis: React.FC = () => {
             fetchAnalysis();
         }
     }, [id]);
+
+    const handleAnswerSelect = (questionIndex: number, letter: string) => {
+        setSelectedAnswers(prev => ({
+            ...prev,
+            [questionIndex]: letter
+        }));
+    };
+
+    const calculateScore = () => {
+        if (!data?.tests) return 0;
+        const totalQuestions = data.tests.length;
+        const correctAnswers = data.tests.reduce((count, test, index) => {
+            return count + (selectedAnswers[index] === test.correct_answer ? 1 : 0);
+        }, 0);
+        return Math.round((correctAnswers / totalQuestions) * 100);
+    };
+
+    const handleSubmitTest = () => {
+        const calculatedScore = calculateScore();
+        setScore(calculatedScore);
+        setShowResults(true);
+    };
+
+    const handleRetakeTest = () => {
+        setSelectedAnswers({});
+        setShowResults(false);
+        setScore(null);
+    };
 
     if (loading) {
         return (
@@ -167,25 +198,85 @@ const TranscriptAnalysis: React.FC = () => {
                         <div className="space-y-6">
                             {data.tests.map((test, index) => (
                                 <div key={index} className="border rounded-lg p-4">
-                                    <p className="font-medium text-gray-900 mb-3">{test.question}</p>
+                                    <p className="font-medium text-gray-900 mb-3">
+                                        {index + 1}. {test.question}
+                                    </p>
                                     <div className="space-y-2">
                                         {test.options.map((option) => (
-                                            <div key={option.letter} className="flex items-center p-2 bg-gray-50 rounded">
+                                            <div
+                                                key={option.letter}
+                                                onClick={() => !showResults && handleAnswerSelect(index, option.letter)}
+                                                className={`flex items-center p-3 rounded cursor-pointer transition-colors ${
+                                                    showResults
+                                                        ? option.letter === test.correct_answer
+                                                            ? 'bg-green-100 border-green-500'
+                                                            : selectedAnswers[index] === option.letter
+                                                            ? 'bg-red-100 border-red-500'
+                                                            : 'bg-gray-50'
+                                                        : selectedAnswers[index] === option.letter
+                                                        ? 'bg-blue-100 border-blue-500'
+                                                        : 'bg-gray-50 hover:bg-gray-100'
+                                                } ${
+                                                    showResults && option.letter === test.correct_answer
+                                                        ? 'border-2'
+                                                        : 'border'
+                                                }`}
+                                            >
                                                 <span className="font-medium text-gray-700 mr-2">{option.letter}.</span>
                                                 <span className="text-gray-700">{option.text}</span>
                                             </div>
                                         ))}
                                     </div>
-                                    <div className="mt-4 pt-3 border-t">
-                                        <p className="text-sm text-gray-500">
-                                            <span className="font-medium">Correct Answer:</span> {test.correct_answer}
-                                        </p>
-                                        <p className="text-sm text-gray-500 mt-1">
-                                            <span className="font-medium">Explanation:</span> {test.explanation}
-                                        </p>
-                                    </div>
+                                    {showResults && (
+                                        <div className="mt-4 pt-3 border-t">
+                                            <p className="text-sm text-gray-500">
+                                                <span className="font-medium">Your Answer:</span>{' '}
+                                                {selectedAnswers[index] || 'Not answered'}
+                                            </p>
+                                            <p className="text-sm text-gray-500">
+                                                <span className="font-medium">Correct Answer:</span>{' '}
+                                                {test.correct_answer}
+                                            </p>
+                                            <p className="text-sm text-gray-500 mt-1">
+                                                <span className="font-medium">Explanation:</span> {test.explanation}
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
                             ))}
+                        </div>
+
+                        <div className="mt-8 flex justify-center">
+                            {!showResults ? (
+                                <button
+                                    onClick={handleSubmitTest}
+                                    disabled={Object.keys(selectedAnswers).length !== data.tests.length}
+                                    className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                                >
+                                    Submit Test
+                                </button>
+                            ) : (
+                                <div className="text-center">
+                                    <div className="mb-4">
+                                        <p className="text-xl font-semibold">Your Score: {score}%</p>
+                                        <p className="text-gray-600">
+                                            {score === 100
+                                                ? 'Perfect! Excellent work!'
+                                                : score >= 80
+                                                ? 'Great job! Keep it up!'
+                                                : score >= 60
+                                                ? 'Good effort! Room for improvement.'
+                                                : 'Keep practicing! You can do better.'}
+                                        </p>
+                                    </div>
+                                    <button
+                                        onClick={handleRetakeTest}
+                                        className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                                    >
+                                        Retake Test
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

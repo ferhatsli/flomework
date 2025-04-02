@@ -1,21 +1,49 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 
 const Navigation: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
     const location = useLocation();
+    const { id } = useParams<{ id: string }>();
 
-    const navigation = [
-        { name: 'Home', href: '/' },
-        { name: 'Upload', href: '/upload' },
-        { name: 'Analysis', href: '/analysis' },
-        { name: 'Tests', href: '/tests' },
-    ];
+    const getNavItems = () => {
+        const items = [
+            { name: 'Home', href: '/' },
+            { name: 'Upload', href: '/upload' }
+        ];
+
+        // Only add Analysis and Tests links if we have a transcript ID
+        if (id) {
+            items.push(
+                { name: 'Analysis', href: `/analysis/${id}` },
+                { name: 'Tests', href: `/tests/${id}` }
+            );
+        } else if (location.pathname.includes('/analysis/') || location.pathname.includes('/tests/')) {
+            // Extract ID from current path if we're on analysis or tests page
+            const pathId = location.pathname.split('/').pop();
+            items.push(
+                { name: 'Analysis', href: `/analysis/${pathId}` },
+                { name: 'Tests', href: `/tests/${pathId}` }
+            );
+        } else {
+            items.push(
+                { name: 'Analysis', href: '/analysis' },
+                { name: 'Tests', href: '/tests' }
+            );
+        }
+
+        return items;
+    };
 
     const isActive = (path: string) => {
-        return location.pathname === path;
+        if (path === '/') {
+            return location.pathname === path;
+        }
+        return location.pathname.startsWith(path.split('/')[1]);
     };
+
+    const navigation = getNavItems();
 
     return (
         <nav className="bg-white shadow">

@@ -8,8 +8,8 @@ import { Toaster } from 'react-hot-toast';
 
 import Navigation from './components/Navigation';
 import TranscriptUpload from './components/TranscriptUpload';
-import TranscriptAnalysis from './components/TranscriptAnalysis';
-import TestGeneration from './components/TestGeneration';
+import Analysis from './components/Analysis';
+import Tests from './components/Tests';
 
 const App = () => {
     return (
@@ -20,8 +20,8 @@ const App = () => {
                     <Routes>
                         <Route path="/" element={<TranscriptUpload />} />
                         <Route path="/upload" element={<TranscriptUpload />} />
-                        <Route path="/analysis/:id" element={<TranscriptAnalysis />} />
-                        <Route path="/test/:id" element={<TestGeneration />} />
+                        <Route path="/analysis/:id" element={<Analysis />} />
+                        <Route path="/tests/:id" element={<Tests />} />
                     </Routes>
                 </main>
                 <Toaster position="top-right" />
