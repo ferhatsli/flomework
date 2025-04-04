@@ -1,26 +1,23 @@
-# Flalingo - English Learning Analysis Platform
+# Flalingo - Transcript Analysis Tool
 
-Flalingo is a web application that analyzes English learning conversations and provides detailed feedback on student performance. The system processes transcripts from various sources (Gladia, OpenAI, and Zoom) and generates comprehensive analysis reports.
+Flalingo is a web application that analyzes conversation transcripts and provides insights, along with generating practice tests based on the content.
 
 ## Features
 
-- Upload and process conversation transcripts (CSV and TXT formats)
-- Analyze English language proficiency
-- Generate detailed feedback reports
-- Track student progress
-- Support for multiple transcript sources:
-  - Gladia transcription
-  - OpenAI analysis
-  - Zoom transcripts
+- Upload conversation transcripts (TXT, CSV, PDF, DOC, DOCX)
+- Automatic conversation analysis
+- Test generation based on transcript content
+- Interactive test-taking interface
+- Beautiful and responsive UI
 
 ## Requirements
 
-- PHP >= 8.0
-- Laravel >= 9.0
-- MySQL >= 5.7
+- PHP >= 8.1
 - Composer
-- Node.js & NPM
-- XAMPP/WAMP/MAMP (for local development)
+- Node.js >= 16
+- MySQL/MariaDB
+- Python 3.8+ (for Flask API)
+- XAMPP/WAMP/MAMP or similar (for local development)
 
 ## Installation
 
@@ -35,12 +32,12 @@ cd flalingo
 composer install
 ```
 
-3. Install JavaScript dependencies:
+3. Install Node.js dependencies:
 ```bash
 npm install
 ```
 
-4. Create environment file:
+4. Create a copy of the environment file:
 ```bash
 cp .env.example .env
 ```
@@ -50,8 +47,8 @@ cp .env.example .env
 php artisan key:generate
 ```
 
-6. Configure your database in `.env`:
-```
+6. Configure your database in the `.env` file:
+```env
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
@@ -60,104 +57,46 @@ DB_USERNAME=your_username
 DB_PASSWORD=your_password
 ```
 
-7. Run database migrations:
+7. Configure Flask API URL in the `.env` file:
+```env
+FLASK_API_URL=http://127.0.0.1:5000
+```
+
+8. Run database migrations:
 ```bash
 php artisan migrate
 ```
 
-8. Create storage link:
+9. Create storage link:
 ```bash
 php artisan storage:link
 ```
 
-9. Build assets:
+10. Build frontend assets:
 ```bash
-npm run dev
+npm run build
 ```
 
-## Configuration
+## Development
 
-### Flask API Setup
-
-The application requires a Flask API for transcript analysis. Configure the API endpoint in your `.env` file:
-
-```
-FLASK_API_URL=http://your-flask-api-url
-```
-
-### File Storage
-
-Transcripts are stored in the `storage/app/public/transcripts` directory. Ensure this directory is writable:
-
-```bash
-chmod -R 775 storage/app/public/transcripts
-```
-
-## Usage
-
-1. Start the development server:
+1. Start the Laravel development server:
 ```bash
 php artisan serve
 ```
 
-2. Access the application at `http://localhost:8000`
-
-3. Upload transcripts in either CSV or TXT format:
-   - CSV files should contain columns: `gladia_response`, `openai_response`, and `zoom_transcription`
-   - TXT files should follow the conversation format:
-     ```
-     Speaker 1: Hello!
-     Speaker 2: Hi, how are you?
-     ```
-
-## API Endpoints
-
-- `POST /api/transcripts/upload` - Upload and analyze transcripts
-- `GET /api/transcripts/{id}/analysis` - Get analysis results
-- `GET /api/transcripts` - List all transcripts
-- `GET /api/health-check` - Check system status
-
-## Development
-
-### Running Tests
-
+2. Start the Vite development server:
 ```bash
-php artisan test
+npm run dev
 ```
 
-### Code Style
+3. Make sure the Flask API server is running (see Flask API repository)
 
-The project follows PSR-12 coding standards. Run PHP CS Fixer:
+## Usage
 
-```bash
-./vendor/bin/php-cs-fixer fix
-```
-
-## Troubleshooting
-
-### Common Issues
-
-1. Storage Permission Issues:
-```bash
-chmod -R 775 storage bootstrap/cache
-```
-
-2. Composer Dependencies:
-```bash
-composer dump-autoload
-```
-
-3. Clear Application Cache:
-```bash
-php artisan cache:clear
-php artisan config:clear
-```
-
-### Error Logs
-
-Check the following log files for errors:
-- Laravel Logs: `storage/logs/laravel.log`
-- PHP Error Logs: Check your local server's error logs
+1. Access the application at `http://localhost:8000`
+2. Upload a transcript file
+3. View the analysis results
+4. Take generated tests
 
 ## Contributing
 

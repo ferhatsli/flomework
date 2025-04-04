@@ -19,6 +19,7 @@ Route::get('/transcripts', [TranscriptController::class, 'index']);
 Route::prefix('transcript')->group(function () {
     Route::post('/upload', [TranscriptController::class, 'upload']);
     Route::get('/{id}', [TranscriptController::class, 'getAnalysis']);
+    Route::delete('/{id}', [TranscriptController::class, 'destroy']);
     Route::post('/{id}/generate-tests', [TranscriptController::class, 'generateTests']);
 });
 

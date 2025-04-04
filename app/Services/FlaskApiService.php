@@ -26,8 +26,7 @@ class FlaskApiService
 
             $response = Http::timeout(30)
                 ->withHeaders([
-                    'Accept' => 'application/json',
-                    'Origin' => config('app.url')
+                    'Accept' => 'application/json'
                 ])
                 ->attach(
                     'transcript_file',

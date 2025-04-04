@@ -9,8 +9,7 @@ const Navigation: React.FC = () => {
 
     const getNavItems = () => {
         const items = [
-            { name: 'Home', href: '/' },
-            { name: 'Upload', href: '/upload' }
+            { name: 'Home', href: '/' }
         ];
 
         // Only add Analysis and Tests links if we have a transcript ID
@@ -22,15 +21,12 @@ const Navigation: React.FC = () => {
         } else if (location.pathname.includes('/analysis/') || location.pathname.includes('/tests/')) {
             // Extract ID from current path if we're on analysis or tests page
             const pathId = location.pathname.split('/').pop();
-            items.push(
-                { name: 'Analysis', href: `/analysis/${pathId}` },
-                { name: 'Tests', href: `/tests/${pathId}` }
-            );
-        } else {
-            items.push(
-                { name: 'Analysis', href: '/analysis' },
-                { name: 'Tests', href: '/tests' }
-            );
+            if (pathId) {
+                items.push(
+                    { name: 'Analysis', href: `/analysis/${pathId}` },
+                    { name: 'Tests', href: `/tests/${pathId}` }
+                );
+            }
         }
 
         return items;

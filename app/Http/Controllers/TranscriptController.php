@@ -458,4 +458,32 @@ class TranscriptController extends Controller
             ], 500);
         }
     }
+
+    public function destroy($id)
+    {
+        try {
+            $transcript = Transcript::findOrFail($id);
+            
+            // Delete the file from storage
+            if (Storage::disk('public')->exists($transcript->file_path)) {
+                Storage::disk('public')->delete($transcript->file_path);
+            }
+            
+            // Delete the database record
+            $transcript->delete();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Transcript deleted successfully'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to delete transcript', [
+                'id' => $id,
+                'error' => $e->getMessage()
+            ]);
+            return response()->json([
+                'error' => 'Failed to delete transcript: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }
