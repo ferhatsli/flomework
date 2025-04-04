@@ -20,7 +20,8 @@ const TranscriptList: React.FC = () => {
     const [transcripts, setTranscripts] = useState<Transcript[]>([]);
     const [loading, setLoading] = useState(true);
     const [isUploading, setIsUploading] = useState(false);
-    const [uploadProgress, setUploadProgress] = useState(0);
+    const [actualProgress, setActualProgress] = useState(0);
+    const [displayedProgress, setDisplayedProgress] = useState(0);
     const [isDeleting, setIsDeleting] = useState<number | null>(null);
     const navigate = useNavigate();
 
@@ -44,6 +45,25 @@ const TranscriptList: React.FC = () => {
         fetchTranscripts();
     }, []);
 
+    useEffect(() => {
+        let animationFrame: number;
+        
+        const animateProgress = () => {
+            setDisplayedProgress(prev => {
+                const diff = actualProgress - prev;
+                if (Math.abs(diff) < 0.1) return actualProgress;
+                return prev + diff * 0.1;
+            });
+            
+            if (displayedProgress !== actualProgress) {
+                animationFrame = requestAnimationFrame(animateProgress);
+            }
+        };
+        
+        animationFrame = requestAnimationFrame(animateProgress);
+        return () => cancelAnimationFrame(animationFrame);
+    }, [actualProgress]);
+
     const onDrop = useCallback(async (acceptedFiles: File[]) => {
         const file = acceptedFiles[0];
         if (!file) return;
@@ -54,7 +74,8 @@ const TranscriptList: React.FC = () => {
         }
 
         setIsUploading(true);
-        setUploadProgress(0);
+        setActualProgress(0);
+        setDisplayedProgress(0);
 
         const formData = new FormData();
         formData.append('transcript_file', file);
@@ -71,13 +92,15 @@ const TranscriptList: React.FC = () => {
                 timeout: 0,
                 onUploadProgress: (progressEvent) => {
                     const percentCompleted = Math.round((progressEvent.loaded * 100) / (progressEvent.total || file.size));
-                    setUploadProgress(percentCompleted);
+                    setActualProgress(percentCompleted);
                 }
             });
 
             if (response.data.success) {
+                setActualProgress(100);
+                await new Promise(resolve => setTimeout(resolve, 500)); // Wait for progress animation to complete
                 toast.success('Transcript uploaded successfully!');
-                await fetchTranscripts(); // Refresh the list after successful upload
+                await fetchTranscripts();
                 navigate(`/analysis/${response.data.transcript_id}`);
             } else {
                 throw new Error(response.data.error || 'Upload failed');
@@ -95,7 +118,8 @@ const TranscriptList: React.FC = () => {
             }
         } finally {
             setIsUploading(false);
-            setUploadProgress(0);
+            setActualProgress(0);
+            setDisplayedProgress(0);
         }
     }, [navigate]);
 
@@ -164,13 +188,12 @@ const TranscriptList: React.FC = () => {
                 <div
                     {...getRootProps()}
                     className={`
-                        bg-white rounded-2xl p-8 text-center cursor-pointer transition-all duration-300
+                        bg-white rounded-3xl p-12 text-center cursor-pointer transition-all duration-300
                         border-2 border-dashed
-                        shadow-[0_4px_12px_rgba(0,0,0,0.1)]
-                        hover:shadow-[0_6px_18px_rgba(0,0,0,0.15)]
                         ${isDragActive 
                             ? 'border-[#E35A4B] bg-[#E35A4B]/5' 
-                            : 'border-[#263468]/30 hover:border-[#E35A4B]'}
+                            : 'border-gray-300 hover:border-[#E35A4B]'
+                        }
                     `}
                 >
                     <input {...getInputProps()} />
@@ -183,56 +206,55 @@ const TranscriptList: React.FC = () => {
                                 exit={{ opacity: 0 }}
                                 className="flex flex-col items-center"
                             >
-                                {/* Progress Circle */}
-                                <svg className="w-16 h-16" viewBox="0 0 36 36">
-                                    <circle
-                                        cx="18" cy="18" r="16"
-                                        fill="none"
-                                        className="stroke-[#E35A4B]/20"
-                                        strokeWidth="3"
-                                    />
-                                    <circle
-                                        cx="18" cy="18" r="16"
-                                        fill="none"
-                                        className="stroke-[#E35A4B]"
-                                        strokeWidth="3"
-                                        strokeDasharray={`${uploadProgress}, 100`}
-                                        transform="rotate(-90 18 18)"
-                                    />
-                                    <text
-                                        x="18" y="18"
-                                        textAnchor="middle"
-                                        dy=".3em"
-                                        className="fill-[#263468] text-sm font-medium"
-                                    >
-                                        {uploadProgress}%
-                                    </text>
-                                </svg>
-                                <p className="mt-4 text-xl font-semibold text-[#263468]">
+                                <div className="relative w-24 h-24 mb-4">
+                                    <svg className="w-full h-full" viewBox="0 0 100 100">
+                                        <circle
+                                            cx="50" cy="50" r="45"
+                                            fill="none"
+                                            stroke="#E1E1E1"
+                                            strokeWidth="8"
+                                        />
+                                        <circle
+                                            cx="50" cy="50" r="45"
+                                            fill="none"
+                                            stroke="#E35A4B"
+                                            strokeWidth="8"
+                                            strokeDasharray={`${displayedProgress * 2.83}, 283`}
+                                            transform="rotate(-90 50 50)"
+                                            strokeLinecap="round"
+                                        />
+                                    </svg>
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <span className="text-2xl font-semibold text-[#263468]">
+                                            {Math.round(displayedProgress)}%
+                                        </span>
+                                    </div>
+                                </div>
+                                <h3 className="text-xl font-semibold text-[#263468] mb-2">
                                     Uploading...
-                                </p>
+                                </h3>
                             </motion.div>
                         ) : (
                             <motion.div
                                 key="dropzone"
-                                className="space-y-4"
+                                className="space-y-6"
                             >
-                                <div className="w-16 h-16 mx-auto rounded-full bg-[#263468]/5 flex items-center justify-center">
-                                    <ArrowUpTrayIcon className={`h-8 w-8 ${
+                                <div className="w-20 h-20 mx-auto rounded-full bg-[#263468]/5 flex items-center justify-center">
+                                    <ArrowUpTrayIcon className={`h-10 w-10 ${
                                         isDragActive ? 'text-[#E35A4B]' : 'text-[#263468]'
                                     }`} />
                                 </div>
                                 <div>
-                                    <p className="text-xl font-semibold text-[#263468]">
+                                    <h3 className="text-2xl font-semibold text-[#263468] mb-2">
                                         {isDragActive ? 'Drop the file here' : 'Upload your transcript'}
-                                    </p>
-                                    <p className="mt-2 text-gray-500">
+                                    </h3>
+                                    <p className="text-gray-500 text-lg">
                                         Drag & drop or click to select
                                     </p>
                                 </div>
                                 <div className="flex justify-center gap-4">
                                     {['TXT', 'CSV', 'PDF', 'DOC'].map(format => (
-                                        <span key={format} className="px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-600">
+                                        <span key={format} className="px-4 py-1.5 rounded-full text-sm font-medium bg-gray-100 text-gray-600">
                                             {format}
                                         </span>
                                     ))}
@@ -312,9 +334,12 @@ const TranscriptList: React.FC = () => {
                                     </Link>
                                     <Link
                                         to={`/tests/${transcript.id}`}
-                                        className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium
-                                                 bg-[#263468] hover:bg-[#263468]/90
-                                                 text-white transition-colors duration-300"
+                                        className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium
+                                                 ${transcript.test_completed 
+                                                    ? 'bg-green-500 hover:bg-green-600'
+                                                    : 'bg-[#263468] hover:bg-[#263468]/90'
+                                                 }
+                                                 text-white transition-colors duration-300`}
                                     >
                                         <BeakerIcon className="h-4 w-4 mr-2" />
                                         {transcript.test_completed ? 'View Results' : 'Take Test'}

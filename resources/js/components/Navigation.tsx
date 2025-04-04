@@ -67,10 +67,10 @@ const Navigation: React.FC = () => {
                                 <Link
                                     key={item.name}
                                     to={item.href}
-                                    className={`inline-flex items-center px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-full
+                                    className={`inline-flex items-center px-1 py-4 text-sm font-medium border-b-2 transition-colors duration-300
                                         ${isActive(item.href)
-                                            ? 'bg-[#263468] text-white'
-                                            : 'text-gray-500 hover:text-[#263468]'
+                                            ? 'border-[#263468] text-[#263468] font-semibold'
+                                            : 'border-transparent text-gray-500 hover:text-[#263468] hover:border-[#263468]/30'
                                         }`}
                                 >
                                     {item.name}
@@ -127,10 +127,10 @@ const Navigation: React.FC = () => {
                         <Link
                             key={item.name}
                             to={item.href}
-                            className={`block px-4 py-2 text-base font-medium ${
+                            className={`block px-4 py-2 text-base font-medium border-l-4 ${
                                 isActive(item.href)
-                                    ? 'bg-[#263468] text-white'
-                                    : 'text-gray-500 hover:text-[#263468] hover:bg-gray-50'
+                                    ? 'border-[#263468] text-[#263468] bg-[#263468]/5'
+                                    : 'border-transparent text-gray-500 hover:text-[#263468] hover:bg-gray-50'
                             }`}
                             onClick={() => setIsOpen(false)}
                         >
