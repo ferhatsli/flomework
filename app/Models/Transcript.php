@@ -19,7 +19,11 @@ class Transcript extends Model
         'file_path',
         'file_type',
         'analysis_result',
-        'tests'
+        'tests',
+        'test_completed',
+        'test_score',
+        'test_answers',
+        'completed_at'
     ];
 
     /**
@@ -28,7 +32,11 @@ class Transcript extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'analysis_result' => 'json',
-        'tests' => 'json',
+        'analysis_result' => 'array',
+        'tests' => 'array',
+        'test_answers' => 'array',
+        'test_completed' => 'boolean',
+        'test_score' => 'integer',
+        'completed_at' => 'datetime'
     ];
 }

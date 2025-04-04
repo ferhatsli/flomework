@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { 
+    Bars3Icon, 
+    XMarkIcon, 
+    BellIcon, 
+    GiftIcon, 
+    ChatBubbleLeftIcon,
+    QuestionMarkCircleIcon
+} from '@heroicons/react/24/outline';
 
 const Navigation: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -42,13 +49,17 @@ const Navigation: React.FC = () => {
     const navigation = getNavItems();
 
     return (
-        <nav className="bg-white shadow-lg">
+        <nav className="bg-white shadow-sm border-b border-gray-100">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between h-16">
+                    {/* Left side - Logo and nav items */}
                     <div className="flex">
                         <div className="flex-shrink-0 flex items-center">
-                            <Link to="/" className="text-2xl font-bold text-[#263468] hover:text-[#E35A4B] transition-colors duration-300">
-                                Flalingo
+                            <Link to="/" className="flex items-center">
+                                <span className="text-2xl font-bold">
+                                    <span className="text-[#263468]">Fla</span>
+                                    <span className="text-[#E35A4B]">lingo</span>
+                                </span>
                             </Link>
                         </div>
                         <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
@@ -56,11 +67,11 @@ const Navigation: React.FC = () => {
                                 <Link
                                     key={item.name}
                                     to={item.href}
-                                    className={`inline-flex items-center px-3 pt-1 border-b-2 text-sm font-medium transition-colors duration-300 ${
-                                        isActive(item.href)
-                                            ? 'border-[#E35A4B] text-[#263468]'
-                                            : 'border-transparent text-gray-500 hover:text-[#263468] hover:border-[#263468]'
-                                    }`}
+                                    className={`inline-flex items-center px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-full
+                                        ${isActive(item.href)
+                                            ? 'bg-[#263468] text-white'
+                                            : 'text-gray-500 hover:text-[#263468]'
+                                        }`}
                                 >
                                     {item.name}
                                 </Link>
@@ -68,18 +79,43 @@ const Navigation: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="-mr-2 flex items-center sm:hidden">
-                        <button
-                            onClick={() => setIsOpen(!isOpen)}
-                            className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
-                        >
-                            <span className="sr-only">Open main menu</span>
-                            {isOpen ? (
-                                <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
-                            ) : (
-                                <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
-                            )}
+                    {/* Right side - Utility icons */}
+                    <div className="flex items-center space-x-4">
+                        <button className="p-2 text-gray-400 hover:text-[#263468] transition-colors duration-300">
+                            <BellIcon className="h-6 w-6" />
                         </button>
+                        <button className="p-2 text-gray-400 hover:text-[#263468] transition-colors duration-300">
+                            <GiftIcon className="h-6 w-6" />
+                        </button>
+                        <button className="p-2 text-gray-400 hover:text-[#263468] transition-colors duration-300">
+                            <ChatBubbleLeftIcon className="h-6 w-6" />
+                        </button>
+                        <button className="p-2 text-gray-400 hover:text-[#263468] transition-colors duration-300">
+                            <QuestionMarkCircleIcon className="h-6 w-6" />
+                        </button>
+                        
+                        {/* Profile/Avatar */}
+                        <div className="flex items-center space-x-2">
+                            <div className="h-8 w-8 rounded-full bg-[#E35A4B] flex items-center justify-center text-white">
+                                F
+                            </div>
+                            <span className="text-sm text-gray-500">21:02 EU/Ist</span>
+                        </div>
+
+                        {/* Mobile menu button */}
+                        <div className="-mr-2 flex items-center sm:hidden">
+                            <button
+                                onClick={() => setIsOpen(!isOpen)}
+                                className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-[#263468] hover:bg-gray-100 focus:outline-none"
+                            >
+                                <span className="sr-only">Open main menu</span>
+                                {isOpen ? (
+                                    <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
+                                ) : (
+                                    <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
+                                )}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -91,10 +127,10 @@ const Navigation: React.FC = () => {
                         <Link
                             key={item.name}
                             to={item.href}
-                            className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
+                            className={`block px-4 py-2 text-base font-medium ${
                                 isActive(item.href)
-                                    ? 'bg-blue-50 border-blue-500 text-blue-700'
-                                    : 'border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700'
+                                    ? 'bg-[#263468] text-white'
+                                    : 'text-gray-500 hover:text-[#263468] hover:bg-gray-50'
                             }`}
                             onClick={() => setIsOpen(false)}
                         >

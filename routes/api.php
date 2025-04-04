@@ -21,6 +21,7 @@ Route::prefix('transcript')->group(function () {
     Route::get('/{id}', [TranscriptController::class, 'getAnalysis']);
     Route::delete('/{id}', [TranscriptController::class, 'destroy']);
     Route::post('/{id}/generate-tests', [TranscriptController::class, 'generateTests']);
+    Route::post('/{id}/test-completion', [TranscriptController::class, 'saveTestCompletion']);
 });
 
 Route::get('/health', [TranscriptController::class, 'healthCheck']); 

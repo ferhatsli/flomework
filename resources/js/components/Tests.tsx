@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -20,6 +20,10 @@ interface TranscriptData {
     id: number;
     filename: string;
     tests: Test[] | null;
+    test_completed: boolean;
+    test_score: number | null;
+    test_answers: { [key: number]: string } | null;
+    completed_at: string | null;
 }
 
 const Tests: React.FC = () => {
@@ -30,13 +34,38 @@ const Tests: React.FC = () => {
     const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: string }>({});
     const [showResults, setShowResults] = useState(false);
     const [score, setScore] = useState<number | null>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await axios.get(`/api/transcript/${id}`);
+                console.log('API Response:', response.data); // Debug log
+                
                 if (response.data.success) {
-                    setData(response.data.data);
+                    const transcriptData = response.data.data;
+                    console.log('Transcript Data:', transcriptData); // Debug log
+                    setData(transcriptData);
+                    
+                    // If test was completed, show the results immediately
+                    if (transcriptData.test_completed) {
+                        console.log('Test was completed, showing results'); // Debug log
+                        console.log('Test Score:', transcriptData.test_score);
+                        console.log('Test Answers:', transcriptData.test_answers);
+                        
+                        setShowResults(true);
+                        setScore(transcriptData.test_score);
+                        if (transcriptData.test_answers) {
+                            // Convert test_answers from backend format if needed
+                            const answers = typeof transcriptData.test_answers === 'string' 
+                                ? JSON.parse(transcriptData.test_answers) 
+                                : transcriptData.test_answers;
+                            console.log('Parsed Answers:', answers); // Debug log
+                            setSelectedAnswers(answers);
+                        }
+                    } else {
+                        console.log('Test not completed yet'); // Debug log
+                    }
                 } else {
                     throw new Error('Failed to fetch test data');
                 }
@@ -52,6 +81,16 @@ const Tests: React.FC = () => {
             fetchData();
         }
     }, [id]);
+
+    // Add a debug effect to monitor state changes
+    useEffect(() => {
+        console.log('State Update:', {
+            showResults,
+            score,
+            selectedAnswers,
+            'data?.test_completed': data?.test_completed
+        });
+    }, [showResults, score, selectedAnswers, data]);
 
     const handleAnswerSelect = (questionIndex: number, letter: string) => {
         setSelectedAnswers(prev => ({
@@ -79,7 +118,7 @@ const Tests: React.FC = () => {
         return Math.round((correctAnswers / totalQuestions) * 100);
     };
 
-    const handleSubmitTest = () => {
+    const handleSubmitTest = async () => {
         if (!data?.tests) return;
         
         const unansweredQuestions = data.tests.reduce((count, _, index) => {
@@ -95,13 +134,25 @@ const Tests: React.FC = () => {
         setScore(calculatedScore);
         setShowResults(true);
 
-        // Show confetti for scores above 80%
-        if (calculatedScore >= 80) {
-            confetti({
-                particleCount: 100,
-                spread: 70,
-                origin: { y: 0.6 }
+        try {
+            // Save test results to backend
+            await axios.post(`/api/transcript/${id}/test-completion`, {
+                test_score: calculatedScore,
+                test_answers: selectedAnswers,
+                completed_at: new Date().toISOString()
             });
+
+            // Show confetti for scores above 80%
+            if (calculatedScore >= 80) {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            }
+        } catch (error) {
+            console.error('Error saving test results:', error);
+            toast.error('Failed to save test results');
         }
     };
 
@@ -153,18 +204,20 @@ const Tests: React.FC = () => {
                             You got {data.tests.reduce((count, test, index) => 
                                 count + (selectedAnswers[index] === test.correct_answer ? 1 : 0), 0)} out of {data.tests.length} questions correct
                         </p>
-                        {score >= 80 ? (
-                            <p className="mt-4 text-lg text-green-600 font-medium">
-                                🎉 Excellent work! You've mastered this content!
-                            </p>
-                        ) : score >= 60 ? (
-                            <p className="mt-4 text-lg text-[#E35A4B] font-medium">
-                                ⚠️ Good effort, but there's room for improvement. Review the explanations below.
-                            </p>
-                        ) : (
-                            <p className="mt-4 text-lg text-red-600 font-medium">
-                                ⚠️ You might need to review this content again. Focus on the explanations below.
-                            </p>
+                        {score !== null && (
+                            score >= 80 ? (
+                                <p className="mt-4 text-lg text-green-600 font-medium">
+                                    🎉 Excellent work! You've mastered this content!
+                                </p>
+                            ) : score >= 60 ? (
+                                <p className="mt-4 text-lg text-[#E35A4B] font-medium">
+                                    ⚠️ Good effort, but there's room for improvement. Review the explanations below.
+                                </p>
+                            ) : (
+                                <p className="mt-4 text-lg text-red-600 font-medium">
+                                    ⚠️ You might need to review this content again. Focus on the explanations below.
+                                </p>
+                            )
                         )}
                     </div>
 
@@ -219,10 +272,10 @@ const Tests: React.FC = () => {
                         <motion.button
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
-                            onClick={handleRetakeTest}
+                            onClick={() => navigate('/')}
                             className="px-6 py-3 text-white bg-[#E35A4B] rounded-lg hover:bg-[#d54d3f] transition-colors duration-300 text-lg font-medium"
                         >
-                            Retake Test
+                            Back to Home
                         </motion.button>
                     </div>
                 </div>
@@ -271,12 +324,12 @@ const Tests: React.FC = () => {
                             {currentQuestionIndex + 1}. {currentQuestion.question}
                         </p>
                         <div className="space-y-3">
-                            {currentQuestion.options.map((option, index) => (
+                            {currentQuestion.options.map((option) => (
                                 <motion.button
                                     key={option.letter}
                                     initial={{ opacity: 0, x: -20 }}
                                     animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: index * 0.1 }}
+                                    transition={{ delay: 0.1 }}
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
                                     onClick={() => handleAnswerSelect(currentQuestionIndex, option.letter)}
@@ -332,4 +385,4 @@ const Tests: React.FC = () => {
     );
 };
 
-export default Tests; 
+export default Tests;

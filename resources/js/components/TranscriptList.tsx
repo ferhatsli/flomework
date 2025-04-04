@@ -11,6 +11,9 @@ interface Transcript {
     filename: string;
     file_type: string;
     created_at: string;
+    test_completed: boolean;
+    test_score: number | null;
+    completed_at: string | null;
 }
 
 const TranscriptList: React.FC = () => {
@@ -139,11 +142,12 @@ const TranscriptList: React.FC = () => {
         return (
             <div className="flex justify-center items-center min-h-[400px]">
                 <motion.div 
-                    className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#263468]"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.5 }}
-                />
+                    className="w-16 h-16"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                >
+                    <div className="h-full w-full rounded-full border-4 border-[#263468]/20 border-t-[#263468]" />
+                </motion.div>
             </div>
         );
     }
@@ -159,10 +163,15 @@ const TranscriptList: React.FC = () => {
             >
                 <div
                     {...getRootProps()}
-                    className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors duration-300
+                    className={`
+                        bg-white rounded-2xl p-8 text-center cursor-pointer transition-all duration-300
+                        border-2 border-dashed
+                        shadow-[0_4px_12px_rgba(0,0,0,0.1)]
+                        hover:shadow-[0_6px_18px_rgba(0,0,0,0.15)]
                         ${isDragActive 
-                            ? 'border-[#E35A4B] bg-[#E35A4B]/10' 
-                            : 'border-[#263468] hover:border-[#E35A4B]'}`}
+                            ? 'border-[#E35A4B] bg-[#E35A4B]/5' 
+                            : 'border-[#263468]/30 hover:border-[#E35A4B]'}
+                    `}
                 >
                     <input {...getInputProps()} />
                     <AnimatePresence mode="wait">
@@ -174,35 +183,60 @@ const TranscriptList: React.FC = () => {
                                 exit={{ opacity: 0 }}
                                 className="flex flex-col items-center"
                             >
-                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#263468]" />
+                                {/* Progress Circle */}
+                                <svg className="w-16 h-16" viewBox="0 0 36 36">
+                                    <circle
+                                        cx="18" cy="18" r="16"
+                                        fill="none"
+                                        className="stroke-[#E35A4B]/20"
+                                        strokeWidth="3"
+                                    />
+                                    <circle
+                                        cx="18" cy="18" r="16"
+                                        fill="none"
+                                        className="stroke-[#E35A4B]"
+                                        strokeWidth="3"
+                                        strokeDasharray={`${uploadProgress}, 100`}
+                                        transform="rotate(-90 18 18)"
+                                    />
+                                    <text
+                                        x="18" y="18"
+                                        textAnchor="middle"
+                                        dy=".3em"
+                                        className="fill-[#263468] text-sm font-medium"
+                                    >
+                                        {uploadProgress}%
+                                    </text>
+                                </svg>
                                 <p className="mt-4 text-xl font-semibold text-[#263468]">
-                                    Uploading... {uploadProgress}%
+                                    Uploading...
                                 </p>
                             </motion.div>
                         ) : (
                             <motion.div
                                 key="dropzone"
-                                initial={{ scale: 1 }}
-                                animate={{ scale: isDragActive ? 1.1 : 1 }}
-                                transition={{ duration: 0.2 }}
+                                className="space-y-4"
                             >
-                                <ArrowUpTrayIcon className={`h-12 w-12 mx-auto ${
-                                    isDragActive ? 'text-[#E35A4B]' : 'text-[#263468]'
-                                }`} />
-                                <p className="mt-4 text-xl font-semibold text-[#263468]">
-                                    {isDragActive ? 'Drop the file here' : 'Drag & drop a transcript file here'}
-                                </p>
-                                <p className="mt-2 text-lg text-gray-600">
-                                    or click to select a file
-                                </p>
-                                <p className="mt-2 text-sm text-gray-500">
-                                    Supported formats: TXT, CSV, PDF, DOC, DOCX (max 30MB)
-                                </p>
-                                {transcripts.length === 0 && (
-                                    <p className="mt-4 text-lg text-gray-600">
-                                        Upload your first transcript to get started
+                                <div className="w-16 h-16 mx-auto rounded-full bg-[#263468]/5 flex items-center justify-center">
+                                    <ArrowUpTrayIcon className={`h-8 w-8 ${
+                                        isDragActive ? 'text-[#E35A4B]' : 'text-[#263468]'
+                                    }`} />
+                                </div>
+                                <div>
+                                    <p className="text-xl font-semibold text-[#263468]">
+                                        {isDragActive ? 'Drop the file here' : 'Upload your transcript'}
                                     </p>
-                                )}
+                                    <p className="mt-2 text-gray-500">
+                                        Drag & drop or click to select
+                                    </p>
+                                </div>
+                                <div className="flex justify-center gap-4">
+                                    {['TXT', 'CSV', 'PDF', 'DOC'].map(format => (
+                                        <span key={format} className="px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-600">
+                                            {format}
+                                        </span>
+                                    ))}
+                                </div>
                             </motion.div>
                         )}
                     </AnimatePresence>
@@ -212,69 +246,97 @@ const TranscriptList: React.FC = () => {
             {/* Transcripts List Section */}
             {transcripts.length > 0 && (
                 <motion.div 
-                    className="bg-white shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-lg overflow-hidden"
+                    className="space-y-4"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.2 }}
                 >
-                    <div className="px-8 py-6 border-b border-gray-200">
-                        <h2 className="text-2xl font-semibold text-[#263468]">Your Transcripts</h2>
-                    </div>
-                    <ul className="divide-y divide-gray-200">
-                        {transcripts.map((transcript, index) => (
-                            <motion.li 
-                                key={transcript.id} 
-                                className="p-8 hover:bg-gray-50 transition-colors duration-300"
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: index * 0.1 }}
-                            >
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center">
-                                        <DocumentTextIcon className="h-8 w-8 text-[#263468]" />
-                                        <div className="ml-4">
-                                            <h3 className="text-xl font-medium text-[#263468]">{transcript.filename}</h3>
-                                            <p className="text-gray-600">
-                                                Uploaded on {new Date(transcript.created_at).toLocaleDateString()}
+                    <h2 className="text-2xl font-semibold text-[#263468] mb-6">Your Transcripts</h2>
+                    
+                    {transcripts.map((transcript, index) => (
+                        <motion.div 
+                            key={transcript.id}
+                            className="group relative bg-white rounded-2xl p-6 shadow-[0_4px_12px_rgba(0,0,0,0.1)] 
+                                     hover:shadow-[0_6px_18px_rgba(0,0,0,0.15)] transition-all duration-300"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.1 }}
+                        >
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-4">
+                                    <div className="w-12 h-12 rounded-full bg-[#263468]/5 flex items-center justify-center">
+                                        <DocumentTextIcon className="h-6 w-6 text-[#263468]" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-lg font-medium text-[#263468]">
+                                            {transcript.filename}
+                                        </h3>
+                                        <div className="flex items-center space-x-2">
+                                            <p className="text-sm text-gray-500">
+                                                {new Date(transcript.created_at).toLocaleDateString('en-US', {
+                                                    day: 'numeric',
+                                                    month: 'short',
+                                                    year: 'numeric'
+                                                })}
                                             </p>
+                                            {transcript.test_completed && (
+                                                <div className="flex items-center space-x-1">
+                                                    <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+                                                    <div className="flex items-center text-sm">
+                                                        <span className={`font-medium ${
+                                                            transcript.test_completed && transcript.test_score
+                                                                ? transcript.test_score >= 80
+                                                                    ? 'text-green-600'
+                                                                    : transcript.test_score >= 60
+                                                                        ? 'text-yellow-600'
+                                                                        : 'text-red-600'
+                                                                : 'text-gray-600'
+                                                        }`}>
+                                                            Score: {transcript.test_score}%
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
-                                    <div className="flex space-x-4">
-                                        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                                            <Link
-                                                to={`/analysis/${transcript.id}`}
-                                                className="inline-flex items-center px-4 py-2 border-2 border-[#263468] text-[#263468] text-lg font-medium rounded-lg hover:bg-[#263468] hover:text-white transition-colors duration-300"
-                                            >
-                                                <ChartBarIcon className="h-5 w-5 mr-2" />
-                                                Analysis
-                                            </Link>
-                                        </motion.div>
-                                        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                                            <Link
-                                                to={`/tests/${transcript.id}`}
-                                                className="inline-flex items-center px-4 py-2 text-white bg-[#E35A4B] text-lg font-medium rounded-lg hover:bg-[#d54d3f] transition-colors duration-300"
-                                            >
-                                                <BeakerIcon className="h-5 w-5 mr-2" />
-                                                Tests
-                                            </Link>
-                                        </motion.div>
-                                        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                                            <button
-                                                onClick={() => handleDelete(transcript.id)}
-                                                disabled={isDeleting === transcript.id}
-                                                className={`inline-flex items-center px-4 py-2 border-2 border-red-500 text-red-500 text-lg font-medium rounded-lg hover:bg-red-500 hover:text-white transition-colors duration-300 ${
-                                                    isDeleting === transcript.id ? 'opacity-50 cursor-not-allowed' : ''
-                                                }`}
-                                            >
-                                                <TrashIcon className="h-5 w-5 mr-2" />
-                                                {isDeleting === transcript.id ? 'Deleting...' : 'Delete'}
-                                            </button>
-                                        </motion.div>
-                                    </div>
                                 </div>
-                            </motion.li>
-                        ))}
-                    </ul>
+                                
+                                <div className="flex items-center space-x-3">
+                                    <Link
+                                        to={`/analysis/${transcript.id}`}
+                                        className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium
+                                                 bg-[#263468] text-white hover:bg-[#263468]/90 transition-colors duration-300"
+                                    >
+                                        <ChartBarIcon className="h-4 w-4 mr-2" />
+                                        Analysis
+                                    </Link>
+                                    <Link
+                                        to={`/tests/${transcript.id}`}
+                                        className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium
+                                                 ${transcript.test_completed && transcript.test_score
+                                                    ? transcript.test_score >= 80
+                                                        ? 'bg-green-500 hover:bg-green-600'
+                                                        : transcript.test_score >= 60
+                                                            ? 'bg-yellow-500 hover:bg-yellow-600'
+                                                            : 'bg-[#E35A4B] hover:bg-[#E35A4B]/90'
+                                                    : 'bg-[#E35A4B] hover:bg-[#E35A4B]/90'} 
+                                                 text-white transition-colors duration-300`}
+                                    >
+                                        <BeakerIcon className="h-4 w-4 mr-2" />
+                                        {transcript.test_completed ? 'View Results' : 'Take Test'}
+                                    </Link>
+                                    <button
+                                        onClick={() => handleDelete(transcript.id)}
+                                        disabled={isDeleting === transcript.id}
+                                        className={`p-2 text-gray-400 hover:text-[#E35A4B] transition-colors duration-300 
+                                                  ${isDeleting === transcript.id ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                    >
+                                        <TrashIcon className="h-5 w-5" />
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    ))}
                 </motion.div>
             )}
         </div>

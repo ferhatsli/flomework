@@ -403,6 +403,14 @@ class TranscriptController extends Controller
                 }
             }
 
+            // Log the response data for debugging
+            Log::info('Sending transcript data', [
+                'id' => $transcript->id,
+                'test_completed' => $transcript->test_completed,
+                'test_score' => $transcript->test_score,
+                'has_test_answers' => !empty($transcript->test_answers)
+            ]);
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -412,6 +420,10 @@ class TranscriptController extends Controller
                     'file_type' => $transcript->file_type,
                     'analysis_result' => $analysisResult,
                     'tests' => $tests,
+                    'test_completed' => $transcript->test_completed,
+                    'test_score' => $transcript->test_score,
+                    'test_answers' => $transcript->test_answers,
+                    'completed_at' => $transcript->completed_at,
                     'created_at' => $transcript->created_at,
                     'updated_at' => $transcript->updated_at
                 ]
@@ -483,6 +495,34 @@ class TranscriptController extends Controller
             ]);
             return response()->json([
                 'error' => 'Failed to delete transcript: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Save test completion results
+     */
+    public function saveTestCompletion(Request $request, $id)
+    {
+        try {
+            $transcript = Transcript::findOrFail($id);
+            
+            $transcript->update([
+                'test_completed' => true,
+                'test_score' => $request->test_score,
+                'test_answers' => $request->test_answers,
+                'completed_at' => now()
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Test results saved successfully'
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error saving test results: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to save test results'
             ], 500);
         }
     }
