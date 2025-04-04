@@ -312,15 +312,9 @@ const TranscriptList: React.FC = () => {
                                     </Link>
                                     <Link
                                         to={`/tests/${transcript.id}`}
-                                        className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium
-                                                 ${transcript.test_completed && transcript.test_score
-                                                    ? transcript.test_score >= 80
-                                                        ? 'bg-green-500 hover:bg-green-600'
-                                                        : transcript.test_score >= 60
-                                                            ? 'bg-yellow-500 hover:bg-yellow-600'
-                                                            : 'bg-[#E35A4B] hover:bg-[#E35A4B]/90'
-                                                    : 'bg-[#E35A4B] hover:bg-[#E35A4B]/90'} 
-                                                 text-white transition-colors duration-300`}
+                                        className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium
+                                                 bg-[#263468] hover:bg-[#263468]/90
+                                                 text-white transition-colors duration-300"
                                     >
                                         <BeakerIcon className="h-4 w-4 mr-2" />
                                         {transcript.test_completed ? 'View Results' : 'Take Test'}

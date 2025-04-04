@@ -196,84 +196,143 @@ const Tests: React.FC = () => {
                     damping: 25
                 }}
             >
-                <div className="bg-white shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-lg p-8">
-                    <h2 className="text-2xl font-semibold text-[#263468] mb-8">Test Results</h2>
-                    <div className="text-center mb-8">
-                        <p className="text-4xl font-bold text-[#263468]">{score}%</p>
-                        <p className="text-gray-600 mt-2">
-                            You got {data.tests.reduce((count, test, index) => 
-                                count + (selectedAnswers[index] === test.correct_answer ? 1 : 0), 0)} out of {data.tests.length} questions correct
-                        </p>
-                        {score !== null && (
-                            score >= 80 ? (
-                                <p className="mt-4 text-lg text-green-600 font-medium">
-                                    🎉 Excellent work! You've mastered this content!
-                                </p>
-                            ) : score >= 60 ? (
-                                <p className="mt-4 text-lg text-[#E35A4B] font-medium">
-                                    ⚠️ Good effort, but there's room for improvement. Review the explanations below.
-                                </p>
-                            ) : (
-                                <p className="mt-4 text-lg text-red-600 font-medium">
-                                    ⚠️ You might need to review this content again. Focus on the explanations below.
-                                </p>
-                            )
-                        )}
-                    </div>
-
-                    <div className="space-y-8">
-                        {data.tests.map((test, index) => (
-                            <motion.div 
-                                key={index} 
-                                className="border-2 border-[#263468] rounded-lg p-6"
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: index * 0.1 }}
-                            >
-                                <div className="flex items-start space-x-4">
-                                    {selectedAnswers[index] === test.correct_answer ? (
-                                        <CheckCircleIcon className="h-6 w-6 text-[#263468] flex-shrink-0" />
-                                    ) : (
-                                        <XCircleIcon className="h-6 w-6 text-[#E35A4B] flex-shrink-0" />
-                                    )}
-                                    <div className="flex-grow">
-                                        <p className="text-2xl font-semibold text-[#263468] mb-4">
-                                            {index + 1}. {test.question}
-                                        </p>
-                                        <div className="space-y-3">
-                                            {test.options.map((option) => (
-                                                <div
-                                                    key={option.letter}
-                                                    className={`p-6 rounded-lg text-lg font-medium border-2 transition-colors duration-300 ${
-                                                        option.letter === test.correct_answer
-                                                            ? 'bg-[#263468] text-white border-[#263468]'
-                                                            : option.letter === selectedAnswers[index]
-                                                            ? 'bg-[#E35A4B] text-white border-[#E35A4B]'
-                                                            : 'bg-white text-[#263468] border-[#263468]'
-                                                    }`}
-                                                >
-                                                    <span className="font-medium">{option.letter}.</span> {option.text}
-                                                </div>
-                                            ))}
-                                        </div>
-                                        {selectedAnswers[index] !== test.correct_answer && (
-                                            <div className="mt-6 text-lg">
-                                                <p className="font-semibold text-[#263468]">Explanation:</p>
-                                                <p className="text-gray-600 mt-2">{test.explanation}</p>
-                                            </div>
-                                        )}
+                <div className="bg-white shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-2xl overflow-hidden">
+                    {/* Header with Score */}
+                    <div className="px-8 py-10 text-center relative overflow-hidden">
+                        <motion.div
+                            initial={{ scale: 0.5, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            transition={{ delay: 0.2, type: "spring", stiffness: 300 }}
+                        >
+                            <h2 className="text-2xl font-semibold text-[#263468] mb-12">Test Results</h2>
+                            
+                            {/* Score Display */}
+                            <div className="relative mb-8">
+                                <motion.div 
+                                    className="w-48 h-48 mx-auto"
+                                    initial={{ opacity: 0, scale: 0.5 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ delay: 0.3 }}
+                                >
+                                    <div className={`text-[120px] font-bold ${
+                                        score && score >= 80 ? 'text-green-500' :
+                                        score && score >= 60 ? 'text-yellow-500' :
+                                        'text-[#E35A4B]'
+                                    }`}>
+                                        {score}
+                                        <span className="text-4xl ml-1">%</span>
                                     </div>
-                                </div>
-                            </motion.div>
-                        ))}
+                                </motion.div>
+                            </div>
+
+                            <p className="text-gray-600 text-lg mb-6">
+                                You got {data.tests.reduce((count, test, index) => 
+                                    count + (selectedAnswers[index] === test.correct_answer ? 1 : 0), 0)} out of {data.tests.length} questions correct
+                            </p>
+
+                            {/* Status Message */}
+                            {score !== null && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.4 }}
+                                    className={`inline-flex items-center px-6 py-3 rounded-xl ${
+                                        score >= 80 
+                                            ? 'bg-green-50'
+                                            : score >= 60
+                                            ? 'bg-yellow-50'
+                                            : 'bg-red-50'
+                                    }`}
+                                >
+                                    <span className="text-xl mr-3">
+                                        {score >= 80 ? '🎉' : '⚠️'}
+                                    </span>
+                                    <p className={`text-lg font-medium ${
+                                        score >= 80 
+                                            ? 'text-green-700'
+                                            : score >= 60
+                                            ? 'text-yellow-700'
+                                            : 'text-[#E35A4B]'
+                                    }`}>
+                                        {score >= 80
+                                            ? 'Excellent work! You\'ve mastered this content!'
+                                            : score >= 60
+                                            ? 'Good effort, but there\'s room for improvement.'
+                                            : 'You might need to review this content again.'}
+                                    </p>
+                                </motion.div>
+                            )}
+                        </motion.div>
                     </div>
 
-                    <div className="mt-8 text-center">
+                    {/* Questions Review */}
+                    <div className="mt-8 px-8 py-6 border-t border-gray-100">
+                        <div className="space-y-6">
+                            {data.tests.map((test, index) => (
+                                <motion.div 
+                                    key={index} 
+                                    className="border border-gray-200 hover:border-[#263468]/20 rounded-xl p-6 transition-all duration-300"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: index * 0.1 }}
+                                >
+                                    <div className="flex items-start space-x-4">
+                                        <div className="flex-shrink-0 mt-1">
+                                            {selectedAnswers[index] === test.correct_answer ? (
+                                                <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center">
+                                                    <CheckCircleIcon className="h-5 w-5 text-green-600" />
+                                                </div>
+                                            ) : (
+                                                <div className="w-6 h-6 rounded-full bg-red-100 flex items-center justify-center">
+                                                    <XCircleIcon className="h-5 w-5 text-[#E35A4B]" />
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="flex-grow">
+                                            <p className="text-xl font-semibold text-[#263468] mb-4">
+                                                {index + 1}. {test.question}
+                                            </p>
+                                            <div className="space-y-3">
+                                                {test.options.map((option) => (
+                                                    <div
+                                                        key={option.letter}
+                                                        className={`p-4 rounded-xl text-lg font-medium transition-colors duration-300 ${
+                                                            option.letter === test.correct_answer
+                                                                ? 'bg-green-50 text-green-700 border border-green-200'
+                                                                : option.letter === selectedAnswers[index]
+                                                                ? 'bg-red-50 text-[#E35A4B] border border-red-200'
+                                                                : 'bg-gray-50 text-gray-500 border border-gray-100'
+                                                        }`}
+                                                    >
+                                                        <span className="font-medium">{option.letter}.</span> {option.text}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            {selectedAnswers[index] !== test.correct_answer && (
+                                                <motion.div 
+                                                    className="mt-4 p-4 bg-[#263468]/5 rounded-xl"
+                                                    initial={{ opacity: 0 }}
+                                                    animate={{ opacity: 1 }}
+                                                    transition={{ delay: 0.2 }}
+                                                >
+                                                    <p className="font-semibold text-[#263468] mb-2">Explanation:</p>
+                                                    <p className="text-gray-600">{test.explanation}</p>
+                                                </motion.div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="px-8 py-6 border-t border-gray-100 flex justify-center">
                         <motion.button
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             onClick={() => navigate('/')}
-                            className="px-6 py-3 text-white bg-[#E35A4B] rounded-lg hover:bg-[#d54d3f] transition-colors duration-300 text-lg font-medium"
+                            className="px-6 py-3 text-white bg-[#263468] rounded-xl hover:bg-[#263468]/90 
+                                     transition-colors duration-300 text-lg font-medium shadow-sm"
                         >
                             Back to Home
                         </motion.button>
