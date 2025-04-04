@@ -10,6 +10,7 @@ import Navigation from './components/Navigation';
 import TranscriptUpload from './components/TranscriptUpload';
 import Analysis from './components/Analysis';
 import Tests from './components/Tests';
+import TranscriptList from './components/TranscriptList';
 
 const App = () => {
     return (
@@ -18,7 +19,7 @@ const App = () => {
                 <Navigation />
                 <main className="py-10">
                     <Routes>
-                        <Route path="/" element={<TranscriptUpload />} />
+                        <Route path="/" element={<TranscriptList />} />
                         <Route path="/upload" element={<TranscriptUpload />} />
                         <Route path="/analysis/:id" element={<Analysis />} />
                         <Route path="/tests/:id" element={<Tests />} />

@@ -9,6 +9,11 @@ class Transcript extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<string>
+     */
     protected $fillable = [
         'filename',
         'file_path',
@@ -17,8 +22,13 @@ class Transcript extends Model
         'tests'
     ];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
     protected $casts = [
-        'analysis_result' => 'array',
-        'tests' => 'array'
+        'analysis_result' => 'json',
+        'tests' => 'json',
     ];
 }

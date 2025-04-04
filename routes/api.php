@@ -14,6 +14,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::get('/transcripts', [TranscriptController::class, 'index']);
+
 Route::prefix('transcript')->group(function () {
     Route::post('/upload', [TranscriptController::class, 'upload']);
     Route::get('/{id}', [TranscriptController::class, 'getAnalysis']);

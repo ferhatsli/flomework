@@ -1,0 +1,41 @@
+# Increase upload limits
+php_value upload_max_filesize 30M
+php_value post_max_size 30M
+php_value max_execution_time 300
+php_value max_input_time 300
+
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Redirect Trailing Slashes If Not A Folder...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+
+    # Send Requests To Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+# Increase buffer size
+php_value output_buffering 4096
+
+# Allow larger request sizes
+LimitRequestBody 31457280 SetEnv MAGIC_QUOTES 0
+SetEnv REGISTER_GLOBALS 0
+SetEnv UPLOAD_MAX_FILESIZE 30M
+SetEnv POST_MAX_SIZE 30M
+
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Headers "Content-Type, X-Requested-With, Transfer-Encoding"
+    Header set Access-Control-Allow-Methods "POST, GET, OPTIONS"
+</IfModule>
