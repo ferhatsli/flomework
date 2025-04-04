@@ -1,6 +1,6 @@
-# Flalingo - Transcript Analysis Tool
+# Flomework - Transcript Analysis Tool
 
-Flalingo is a web application that analyzes conversation transcripts and provides insights, along with generating practice tests based on the content.
+Flomework is a web application that analyzes conversation transcripts and provides insights, along with generating practice tests based on the content.
 
 ## Features
 
@@ -23,8 +23,8 @@ Flalingo is a web application that analyzes conversation transcripts and provide
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/flalingo.git
-cd flalingo
+git clone https://github.com/yourusername/flomework.git
+cd flomework
 ```
 
 2. Install PHP dependencies:
@@ -52,7 +52,7 @@ php artisan key:generate
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=flalingo
+DB_DATABASE=flomework
 DB_USERNAME=your_username
 DB_PASSWORD=your_password
 ```

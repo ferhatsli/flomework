@@ -1,6 +1,6 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "flalingo/english-learning-analysis",
+    "name": "flomework/english-learning-analysis",
     "type": "project",
     "description": "English Learning Analysis Platform",
     "keywords": ["laravel", "english", "learning", "analysis"],

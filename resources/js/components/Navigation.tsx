@@ -57,8 +57,8 @@ const Navigation: React.FC = () => {
                         <div className="flex-shrink-0 flex items-center">
                             <Link to="/" className="flex items-center">
                                 <span className="text-2xl font-bold">
-                                    <span className="text-[#263468]">Fla</span>
-                                    <span className="text-[#E35A4B]">lingo</span>
+                                    <span className="text-[#263468]">Fl</span>
+                                    <span className="text-[#E35A4B]">omework</span>
                                 </span>
                             </Link>
                         </div>
