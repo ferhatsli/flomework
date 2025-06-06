@@ -16,7 +16,7 @@ An AI-driven system that analyzes lesson transcripts and generates personalized 
 
 | Home | Take Test | Test Result | Analysis |
 |------|-----------|-------------|----------|
-| <img src="screenshots/home.jpeg" width="220"/> | <img src="screenshots/test.jpeg" width="220"/> | <img src="screenshots/test-result.jpeg" width="220"/> | <img src="screenshots/analysis.jpeg" width="220"/> |
+| <img src="screenshots/Home.jpeg" width="220"/> | <img src="screenshots/test.jpeg" width="220"/> | <img src="screenshots/test-result.jpeg" width="220"/> | <img src="screenshots/Analiz.jpeg" width="220"/> |
 
 > From uploading a lesson transcript to viewing AI-generated results and insights.
 
