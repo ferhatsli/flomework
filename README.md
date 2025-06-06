@@ -1,119 +1,73 @@
-# Flomework - Transcript Analysis Tool
+# 🧠 Flalingo – AI-Powered Exercise Generator
 
-Flomework is a web application that analyzes conversation transcripts and provides insights, along with generating practice tests based on the content.
+An AI-driven system that analyzes lesson transcripts and generates personalized language exercises. Designed as a full-stack feature prototype to enhance digital learning experiences at scale.
 
-## Features
+---
 
-- Upload conversation transcripts (TXT, CSV, PDF, DOC, DOCX)
-- Automatic conversation analysis
-- Test generation based on transcript content
-- Interactive test-taking interface
-- Beautiful and responsive UI
+## 🎯 Project Goals
 
-## Requirements
+- Turn raw lesson transcripts into smart, dynamic questions  
+- Assist teachers and students with auto-generated exercises  
+- Present results and analytics in a clean, user-friendly UI  
 
-- PHP >= 8.1
-- Composer
-- Node.js >= 16
-- MySQL/MariaDB
-- Python 3.8+ (for Flask API)
-- XAMPP/WAMP/MAMP or similar (for local development)
+---
 
-## Installation
+## 📸 Screenshots
 
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/flomework.git
-cd flomework
-```
+| Home | Take Test | Test Result | Analysis |
+|------|-----------|-------------|----------|
+| <img src="screenshots/home.jpeg" width="220"/> | <img src="screenshots/test.jpeg" width="220"/> | <img src="screenshots/test-result.jpeg" width="220"/> | <img src="screenshots/analysis.jpeg" width="220"/> |
 
-2. Install PHP dependencies:
-```bash
-composer install
-```
+> From uploading a lesson transcript to viewing AI-generated results and insights.
 
-3. Install Node.js dependencies:
-```bash
-npm install
-```
+---
 
-4. Create a copy of the environment file:
-```bash
-cp .env.example .env
-```
+## 🎥 Demo Video
 
-5. Generate application key:
-```bash
-php artisan key:generate
-```
+[![Watch the demo](https://img.youtube.com/vi/ex_YMIotOXY/0.jpg)](https://youtu.be/ex_YMIotOXY)
 
-6. Configure your database in the `.env` file:
-```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=flomework
-DB_USERNAME=your_username
-DB_PASSWORD=your_password
-```
+> Click to watch the full end-to-end flow of the application in action.
 
-7. Configure Flask API URL in the `.env` file:
-```env
-FLASK_API_URL=http://127.0.0.1:5000
-```
+---
 
-8. Run database migrations:
-```bash
-php artisan migrate
-```
+## ✨ Features
 
-9. Create storage link:
-```bash
-php artisan storage:link
-```
+- 🧠 AI-powered transcript analysis using LLM models  
+- 📄 Automatic question generation (multiple choice, fill-in-the-blank)  
+- 🧪 Custom test flow with real-time scoring  
+- 📊 Visual analytics with charts and performance insights  
+- 🌐 Full-stack structure with React (frontend) + Laravel/Python (backend)
 
-10. Build frontend assets:
-```bash
-npm run build
-```
+---
 
-## Development
+## ⚙️ Technologies Used
 
-1. Start the Laravel development server:
-```bash
-php artisan serve
-```
+- **Frontend:** React.js, Tailwind CSS  
+- **Backend:** Laravel (PHP), Python  
+- **AI Integration:** Gemini Flash model  
+- **Tools:** Chart.js, Axios, RESTful APIs
 
-2. Start the Vite development server:
-```bash
-npm run dev
-```
+---
 
-3. Make sure the Flask API server is running (see Flask API repository)
+## 🧪 Example Flow
 
-## Usage
+> - Upload a Zoom lesson transcript  
+> - The AI analyzes and generates personalized questions  
+> - The user completes the test  
+> - Results and performance analytics are shown
 
-1. Access the application at `http://localhost:8000`
-2. Upload a transcript file
-3. View the analysis results
-4. Take generated tests
+---
 
-## Contributing
+## 📦 Status
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+✅ Prototype complete  
+🏆 Selected for product integration at Flalingo
 
-## License
+---
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## 📧 Contact
 
-## Acknowledgments
+[ferhatsli63@gmail.com](mailto:ferhatsli63@gmail.com)  
+[linkedin.com/in/ferhat-taşlı-674953218](https://linkedin.com/in/ferhat-ta%C5%9Fl%C4%B1-674953218)
 
-- Laravel Framework
-- Flask API Integration
-- Gladia Transcription Service
-- OpenAI API
-- Zoom API
+---
